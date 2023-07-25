@@ -64,8 +64,9 @@ namespace LightingEngine
 
         private Hull hull = new Hull(new Vector2(1.0f), new Vector2(-1.0f, 1.0f), new Vector2(-1.0f), new Vector2(1.0f, -1.0f))
         {
-            Position = new Vector2(400f, 240f),
-            Scale = new Vector2(50f)
+            Position = new Vector2(320, 240f),
+            Scale = new Vector2(50f),
+            Origin = new Vector2(0.5f)
         };
 
         public GameExample()
@@ -164,7 +165,7 @@ namespace LightingEngine
             //Add the lights to the scene.
             _monoLights.AddLight(_spotlight);
             _monoLights.AddLight(_pointlight);
-            _monoLights.AddLight(_floatinglight);
+            //_monoLights.AddLight(_floatinglight);
         }
 
         /// <summary>
@@ -306,11 +307,6 @@ namespace LightingEngine
             //the rendertarget is now 'null' to draw to the backbuffer. You can also draw to a rendertarget of your own if you want to postprocess it.
             _monoLights.Draw(_frameBuffer, spriteBatch, new Rectangle(0, 0, 640, 480));
 
-            //The last drawcall is any HUD stuff, things that are not affected by the lights.
-            spriteBatch.Begin();
-            DrawDebugtext(spriteBatch);
-            spriteBatch.End();
-
             //Debug: show the rendertargets in the Monolights class.
             if (_drawDebugTargets)
                 _monoLights.DrawDebugRenderTargets(spriteBatch);
@@ -336,6 +332,11 @@ namespace LightingEngine
             penumbra.Draw(gameTime);
 
             // Draw items NOT affected by lighting here ... (UI, for example)
+
+            //The last drawcall is any HUD stuff, things that are not affected by the lights.
+            spriteBatch.Begin();
+            DrawDebugtext(spriteBatch);
+            spriteBatch.End();
         }
 
         /// <summary>
