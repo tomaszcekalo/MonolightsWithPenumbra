@@ -73,8 +73,8 @@ namespace LightingEngine
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
-            graphics.PreferredBackBufferWidth = 640;
-            graphics.PreferredBackBufferHeight = 480;
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 960;
             Content.RootDirectory = "Content";
 
             //graphics.SynchronizeWithVerticalRetrace = false;
@@ -258,7 +258,7 @@ namespace LightingEngine
 
             _pointlight.Position = new Vector3(m.Position.X, m.Position.Y, _zValue);
 
-            light.Position = new Vector2(_pointlight.Position.X, _pointlight.Position.Y);
+            light.Position = new Vector2(_pointlight.Position.X * 2, _pointlight.Position.Y * 2);
 
             _spotlight.Position = new Vector3(m.Position.X, m.Position.Y, _zValue);
             _spotlight.SpotRotation = _spotRotation;
@@ -323,9 +323,8 @@ namespace LightingEngine
 
             //GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
-            spriteBatch.Draw(_frameBuffer, new Rectangle(0, 0, 640, 480), Color.White);
+            spriteBatch.Draw(_frameBuffer, new Rectangle(0, 0, 1280, 960), Color.White);
             spriteBatch.End();
-            //spriteBatch.Draw(_frameBuffer, new Rectangle(0, 0, 640, 480), Color.White);
 
             // Draw items affected by lighting here ...
 
