@@ -69,12 +69,15 @@ namespace LightingEngine
             Origin = new Vector2(0.5f)
         };
 
+        private Point _screenSize = new Point(1280, 960);
+        private Rectangle _monolightsRectangle = new Rectangle(0, 0, 640, 480);
+
         public GameExample()
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 960;
+            graphics.PreferredBackBufferWidth = _screenSize.X;
+            graphics.PreferredBackBufferHeight = _screenSize.Y;
             Content.RootDirectory = "Content";
 
             //graphics.SynchronizeWithVerticalRetrace = false;
@@ -127,7 +130,7 @@ namespace LightingEngine
             // Load the regular content in the game.
             _diffuse = Content.Load<Texture2D>("brickwall"); //The diffuse map.
             _normal = Content.Load<Texture2D>("brickwall_normal"); //The normal map.
-            _frameBuffer = new RenderTarget2D(this.GraphicsDevice, 640, 480);
+            _frameBuffer = new RenderTarget2D(this.GraphicsDevice, _monolightsRectangle.Width, _monolightsRectangle.Height);
             _monoLights.InvertYNormal = false; //this normalmap has the Y normal in the usual direction.
 
             //Create a few lights:
@@ -294,18 +297,18 @@ namespace LightingEngine
             GraphicsDevice.SetRenderTarget(_monoLights.Colormap);
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
-            spriteBatch.Draw(_diffuse, new Rectangle(0, 0, 640, 480), Color.White);
+            spriteBatch.Draw(_diffuse, _monolightsRectangle, Color.White);
             spriteBatch.End();
 
             //Next we draw the game again, except the graphics use the normalmap data.
             GraphicsDevice.SetRenderTarget(_monoLights.Normalmap);
             spriteBatch.Begin();
-            spriteBatch.Draw(_normal, new Rectangle(0, 0, 640, 480), Color.White);
+            spriteBatch.Draw(_normal, _monolightsRectangle, Color.White);
             spriteBatch.End();
 
             //Finally draw the combined scene.
             //the rendertarget is now 'null' to draw to the backbuffer. You can also draw to a rendertarget of your own if you want to postprocess it.
-            _monoLights.Draw(_frameBuffer, spriteBatch, new Rectangle(0, 0, 640, 480));
+            _monoLights.Draw(_frameBuffer, spriteBatch, _monolightsRectangle);
 
             //Debug: show the rendertargets in the Monolights class.
             if (_drawDebugTargets)
@@ -323,7 +326,7 @@ namespace LightingEngine
 
             //GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
-            spriteBatch.Draw(_frameBuffer, new Rectangle(0, 0, 1280, 960), Color.White);
+            spriteBatch.Draw(_frameBuffer, new Rectangle(0, 0, _screenSize.X, _screenSize.Y), Color.White);
             spriteBatch.End();
 
             // Draw items affected by lighting here ...
