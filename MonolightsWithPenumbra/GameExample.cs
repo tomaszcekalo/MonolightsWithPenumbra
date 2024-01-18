@@ -29,6 +29,7 @@ namespace LightingEngine
         private Texture2D _diffuse;
         private Texture2D _normal;
         private RenderTarget2D _frameBuffer;
+        private RenderTarget2D _frameBuffer2;
         private Monolights.PointLight _pointlight;
         private SpotLight _spotlight;
 
@@ -69,8 +70,8 @@ namespace LightingEngine
             Origin = new Vector2(0.5f)
         };
 
-        private Point _screenSize = new Point(1280, 960);
-        private Rectangle _monolightsRectangle = new Rectangle(0, 0, 640, 480);
+        private Point _screenSize = new Point(1024, 1024);
+        private Rectangle _monolightsRectangle = new Rectangle(0, 0, 1024, 1024);
 
         public GameExample()
         {
@@ -131,6 +132,7 @@ namespace LightingEngine
             _diffuse = Content.Load<Texture2D>("brickwall"); //The diffuse map.
             _normal = Content.Load<Texture2D>("brickwall_normal"); //The normal map.
             _frameBuffer = new RenderTarget2D(this.GraphicsDevice, _monolightsRectangle.Width, _monolightsRectangle.Height);
+            _frameBuffer2 = new RenderTarget2D(this.GraphicsDevice, _monolightsRectangle.Width, _monolightsRectangle.Height);
             _monoLights.InvertYNormal = false; //this normalmap has the Y normal in the usual direction.
 
             //Create a few lights:
@@ -261,7 +263,8 @@ namespace LightingEngine
 
             _pointlight.Position = new Vector3(m.Position.X, m.Position.Y, _zValue);
 
-            light.Position = new Vector2(_pointlight.Position.X * 2, _pointlight.Position.Y * 2);
+            //light.Position = new Vector2(_pointlight.Position.X * 2, _pointlight.Position.Y * 2);//ratio between _screenSize and monolightsRectangle
+            light.Position = new Vector2(_pointlight.Position.X, _pointlight.Position.Y);//ratio between _screenSize and monolightsRectangle
 
             _spotlight.Position = new Vector3(m.Position.X, m.Position.Y, _zValue);
             _spotlight.SpotRotation = _spotRotation;
@@ -297,13 +300,13 @@ namespace LightingEngine
             GraphicsDevice.SetRenderTarget(_monoLights.Colormap);
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
-            spriteBatch.Draw(_diffuse, _monolightsRectangle, Color.White);
+            spriteBatch.Draw(_diffuse, _diffuse.Bounds, Color.White);
             spriteBatch.End();
 
             //Next we draw the game again, except the graphics use the normalmap data.
             GraphicsDevice.SetRenderTarget(_monoLights.Normalmap);
             spriteBatch.Begin();
-            spriteBatch.Draw(_normal, _monolightsRectangle, Color.White);
+            spriteBatch.Draw(_normal, _normal.Bounds, Color.White);
             spriteBatch.End();
 
             //Finally draw the combined scene.
@@ -321,12 +324,12 @@ namespace LightingEngine
 
             // Everything between penumbra.BeginDraw and penumbra.Draw will be
             // lit by the lighting system.
-            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.SetRenderTarget(_frameBuffer2);
             penumbra.BeginDraw();
 
             //GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
-            spriteBatch.Draw(_frameBuffer, new Rectangle(0, 0, _screenSize.X, _screenSize.Y), Color.White);
+            spriteBatch.Draw(_frameBuffer, _frameBuffer2.Bounds, Color.White);
             spriteBatch.End();
 
             // Draw items affected by lighting here ...
@@ -338,6 +341,11 @@ namespace LightingEngine
             //The last drawcall is any HUD stuff, things that are not affected by the lights.
             spriteBatch.Begin();
             DrawDebugtext(spriteBatch);
+            spriteBatch.End();
+
+            GraphicsDevice.SetRenderTarget(null);
+            spriteBatch.Begin();
+            spriteBatch.Draw(_frameBuffer2, GraphicsDevice.Viewport.Bounds, Color.White);
             spriteBatch.End();
         }
 
