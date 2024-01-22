@@ -29,7 +29,6 @@ namespace LightingEngine
         private Texture2D _diffuse;
         private Texture2D _normal;
         private RenderTarget2D _frameBuffer;
-        private RenderTarget2D _frameBuffer2;
         private Monolights.PointLight _pointlight;
         private SpotLight _spotlight;
 
@@ -132,7 +131,7 @@ namespace LightingEngine
             _diffuse = Content.Load<Texture2D>("brickwall"); //The diffuse map.
             _normal = Content.Load<Texture2D>("brickwall_normal"); //The normal map.
             _frameBuffer = new RenderTarget2D(this.GraphicsDevice, _monolightsRectangle.Width, _monolightsRectangle.Height);
-            _frameBuffer2 = new RenderTarget2D(this.GraphicsDevice, _monolightsRectangle.Width, _monolightsRectangle.Height);
+            //_frameBuffer2 = new RenderTarget2D(this.GraphicsDevice, _monolightsRectangle.Width, _monolightsRectangle.Height);
             _monoLights.InvertYNormal = false; //this normalmap has the Y normal in the usual direction.
 
             //Create a few lights:
@@ -322,31 +321,17 @@ namespace LightingEngine
 
             base.Draw(gameTime);
 
-            // Everything between penumbra.BeginDraw and penumbra.Draw will be
-            // lit by the lighting system.
-            GraphicsDevice.SetRenderTarget(_frameBuffer2);
-            penumbra.BeginDraw();
-
-            //GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin();
-            spriteBatch.Draw(_frameBuffer, _frameBuffer2.Bounds, Color.White);
-            spriteBatch.End();
-
-            // Draw items affected by lighting here ...
-
-            penumbra.Draw(gameTime);
-
-            // Draw items NOT affected by lighting here ... (UI, for example)
-
             //The last drawcall is any HUD stuff, things that are not affected by the lights.
             spriteBatch.Begin();
             DrawDebugtext(spriteBatch);
             spriteBatch.End();
 
             GraphicsDevice.SetRenderTarget(null);
-            spriteBatch.Begin();
-            spriteBatch.Draw(_frameBuffer2, GraphicsDevice.Viewport.Bounds, Color.White);
-            spriteBatch.End();
+            penumbra.BeginDraw();
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp/*, transformMatrix: Matrix.CreateScale(6)*/);
+            spriteBatch.Draw(_frameBuffer, GraphicsDevice.Viewport.Bounds, Color.White);
+            spriteBatch.End();//*/
+            penumbra.Draw(gameTime);
         }
 
         /// <summary>
